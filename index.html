@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test task</title>
+    <link rel="stylesheet" type="text/css" href="css/normalize.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <style>
+      .animate-on-scroll {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 1.5s ease, transform 1.5s ease;
+      }
+
+      .animate-on-scroll.animated {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.7);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        animation: fadeIn 0.3s ease-out;
+      }
+
+      .modal {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 400px;
+        position: relative;
+        animation: slideUp 0.4s ease-out;
+      }
+
+      .close-modal {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      .close-modal:hover {
+        transform: scale(1.1);
+      }
+
+      .modal h2 {
+        margin-bottom: 1.5rem;
+        text-align: center;
+        color: #333;
+      }
+
+      .modal-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .input-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .input-wrapper input {
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        transition: border-color 0.3s;
+      }
+
+      .input-wrapper input:focus {
+        border-color: #4285f4;
+        outline: none;
+      }
+
+      /* Error message styles */
+      .error-message {
+        color: #e74c3c;
+        font-size: 0.8rem;
+        height: 1rem;
+        display: none;
+      }
+
+      .login-input.error {
+        border-color: red;
+      }
+
+      .modal-submit,
+      .google-signup {
+        padding: 0.8rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s;
+        font-weight: 500;
+      }
+
+      .modal-submit {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      .modal-submit:hover {
+        background-color: #3e8e41;
+        transform: translateY(-2px);
+      }
+
+      .google-signup {
+        background-color: #4285f4;
+        color: white;
+        margin-top: 1rem;
+      }
+
+      .google-signup:hover {
+        background-color: #357ae8;
+        transform: translateY(-2px);
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        20%,
+        60% {
+          transform: translateX(-5px);
+        }
+        40%,
+        80% {
+          transform: translateX(5px);
+        }
+      }
+
+      .shake {
+        animation: shake 0.5s;
+      }
+
+      .pulse-animation {
+        animation: pulse 1.5s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .modal {
+        background-color: #fff;
+        padding: 24px 36px;
+        border-radius: 30px;
+        box-shadow: 0px 10px 40px 0px #0000001a;
+        max-width: 355px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .modal-content {
+        width: 100%;
+      }
+
+      .modal-form .input-wrapper input {
+        padding: 20px;
+        background-color: #f5f7f9;
+        box-shadow: 0px 0px 10px 0px #261f7b0d inset;
+        border-radius: 10px;
+        border: none;
+        font-family: "Trebuchet MS";
+        font-size: 16px;
+      }
+
+      .modal-form .input-wrapper input::placeholder {
+        color: #8789a1;
+        font-size: 18px;
+        line-height: 20px;
+      }
+
+      .modal-submit,
+      .google-signup {
+        background-color: #4285f4;
+        color: white;
+        padding: 16px 20px;
+        border: none;
+        border-radius: 7px;
+        font-size: 1rem;
+        width: 100%;
+        cursor: pointer;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+      }
+
+      .modal-submit:hover,
+      .google-signup:hover {
+        background-color: #357ae8;
+        transform: translateY(-2px);
+      }
+
+      .modal-submit img,
+      .google-signup img {
+        position: absolute;
+        left: 2px;
+        background-color: #fff;
+        padding: 12px;
+        border-radius: 7px;
+        width: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <section class="place">
+      <div class="place-wrapper">
+        <p class="place-title">It’s a hot place for your streaming fantasy.</p>
+        <p class="place-desc">It’s a free space for watching streams and chatting with alluring people.</p>
+      </div>
+      <a class="place-button" href="#form">
+        <span>Sign up now</span>
+      </a>
+    </section>
+
+    <section class="login" id="form">
+      <div class="login-wrapper">
+        <div class="login-text">
+          <p class="login-text-header">It’s a hot place for your streaming fantasy.</p>
+          <p class="login-text-desc">It’s a free space for watching streams and chatting with alluring people.</p>
+        </div>
+        <div class="login-form-wrapper">
+          <a class="login-form-login" href="/" title="Log in">Log in</a>
+          <div class="login-form desktop">
+            <div class="login-form-wrapper">
+              <button class="login-google-button">
+                <img src="media/google.png" alt="Google Logo" />
+                <span>Sign up with Google</span>
+              </button>
+              <p class="login-or">or</p>
+              <div class="login-input-wrapper">
+                <label class="login-label" for="mail">Email</label>
+                <input
+                  class="login-input"
+                  name="mail"
+                  id="mail"
+                  type="email"
+                  placeholder="e.g. Alex@email.com"
+                  required />
+                <span class="error-message" id="emailError"></span>
+              </div>
+              <div class="login-input-wrapper">
+                <label class="login-label" for="pass">Password</label>
+                <input class="login-input" name="pass" id="pass" type="password" placeholder="8+ characters" required />
+                <span class="error-message" id="passwordError"></span>
+              </div>
+              <button class="login-signin-button" type="submit">
+                <img src="media/envelope.png" alt="Email Icon" />
+                <span>Sign up with Email</span>
+              </button>
+              <p class="login-terms">
+                You hereby confirm that you are fully able and competent to access Livebeam and comply with the Terms of
+                Use & Service, and are at least eighteen (18) years of age or the age of majority under the law of the
+                jurisdiction of your residence and the one you are accessing Livebeam from.
+              </p>
+              <ul class="lines">
+                <li class="line"></li>
+                <li class="line active"></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 
+              <ul class="lines">
+                <li class="line"></li>
+                <li class="line active"></li>
+              </ul> -->
+
+    <div class="login-form mobile">
+      <div class="login-form-wrapper">
+        <div class="login-input-wrapper">
+          <label class="login-label" for="mail">I am</label>
+          <div class="login-gender">
+            <div class="login-gender-male login-gender-text">Male</div>
+            <div class="login-gender-female login-gender-text">Female</div>
+          </div>
+        </div>
+        <div class="login-input-wrapper">
+          <label class="login-label" for="mail">My name</label>
+          <input class="login-input" name="name" id="name" type="text" placeholder="e.g. Alex" required />
+        </div>
+        <div class="login-input-wrapper">
+          <label class="login-label" for="name">I was born</label>
+          <input class="login-input" name="pass" id="pass" type="password" placeholder="MM//DD//YYYY" required />
+        </div>
+        <div class="login-checkbox-wrapper">
+          <input class="login-checkbox" type="checkbox" id="myCheckbox" />
+          <label for="myCheckbox"
+            >I have read understand and agree to Terms of Use, Privacy Policy, Disclosures&Disclaimers.</label
+          >
+        </div>
+        <button class="login-signup-button">
+          <span>Sign up now</span>
+        </button>
+        <ul class="lines">
+          <li class="line active"></li>
+          <li class="line"></li>
+        </ul>
+      </div>
+    </div>
+    <section class="slider animate-on-scroll">
+      <div class="swiper mainSwiper">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide"><img src="media/slider-1.gif" alt="Gif image" /></div>
+          <div class="swiper-slide"><img src="media/slider-2.gif" alt="Gif image" /></div>
+          <div class="swiper-slide"><img src="media/slider-1.gif" alt="Gif image" /></div>
+          <div class="swiper-slide"><img src="media/slider-2.gif" alt="Gif image" /></div>
+          <div class="swiper-slide"><img src="media/slider-1.gif" alt="Gif image" /></div>
+          <div class="swiper-slide"><img src="media/slider-2.gif" alt="Gif image" /></div>
+        </div>
+      </div>
+    </section>
+    <section class="about animate-on-scroll">
+      <div class="about-wrapper">
+        <p class="about-title">About</p>
+        <p class="about-text">
+          It’s a global <b>streaming platform</b> for communication and meeting incredibly beautiful people. We created
+          an excellent place where you can enjoy your time and <b>find appropriate matches</b> at first.
+        </p>
+        <p class="about-text">
+          Approximately 80% of our users have already found their lovelies. <b>Watch streams</b> without hindrance and
+          meet someone <b>who interests you.</b>
+        </p>
+        <a class="about-button" href="#form">Join for free</a>
+      </div>
+    </section>
+    <section class="whyjoin">
+      <p class="whyjoin-title animate-on-scroll">Why join us?</p>
+      <div class="whyjoin-wrapper desktop animate-on-scroll">
+        <div class="whyjoin-item whyjoin-item-first">
+          <div class="whyjoin-item-title">
+            <img src="media/steam.svg" alt="steam icon" />
+            <p class="whyjoin-item-text">Chat with attractive streamers for free</p>
+          </div>
+          <div class="whyjoin-item-desc">
+            It’s an excellent web platform for streaming. Write messages to the beautiful streamers for free and explore
+            this magical universe of communication!
+          </div>
+        </div>
+        <div class="whyjoin-item whyjoin-item-second">
+          <div class="whyjoin-item-title">
+            <img src="media/lock.svg" alt="lock icon" width="36" height="36" />
+            <p class="whyjoin-item-text">Only verified users</p>
+          </div>
+          <div class="whyjoin-item-desc">
+            We care about the privacy and security of our customers. All accounts are verified so look for an attractive
+            stranger confidently!
+          </div>
+        </div>
+        <div class="whyjoin-item whyjoin-item-third">
+          <div class="whyjoin-item-title">
+            <img src="media/search.svg" alt="search icon" width="36" height="36" />
+            <p class="whyjoin-item-text">Customized search</p>
+          </div>
+          <div class="whyjoin-item-desc">
+            Match alluring partners for your own preferences. Maybe you will be interested in a hot slender European or
+            shy beautiful Asian? Make your choice…
+          </div>
+        </div>
+        <div class="whyjoin-item whyjoin-item-fourth">
+          <div class="whyjoin-item-title">
+            <img src="media/easy.svg" alt="easy icon" width="36" height="36" />
+            <p class="whyjoin-item-text">Easy to use</p>
+          </div>
+          <div class="whyjoin-item-desc">
+            Forget about hundreds of annoying notifications and inconvenient use. We have created the platform as easy
+            to use and search as possible. Don’t waste your time studying functionality. Just enjoy!
+          </div>
+        </div>
+      </div>
+      <div class="whyjoin-wrapper mobile animate-on-scroll">
+        <div class="swiper whyjoinSwiper">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide">
+              <div class="whyjoin-item whyjoin-item-first">
+                <div class="whyjoin-item-title">
+                  <img src="media/steam.svg" alt="steam icon" />
+                  <p class="whyjoin-item-text">Chat with attractive streamers for free</p>
+                </div>
+                <div class="whyjoin-item-desc">
+                  It’s an excellent web platform for streaming. Write messages to the beautiful streamers for free and
+                  explore this magical universe of communication!
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div class="whyjoin-item whyjoin-item-second">
+                <div class="whyjoin-item-title">
+                  <img src="media/lock.svg" alt="lock icon" width="36" height="36" />
+                  <p class="whyjoin-item-text">Only verified users</p>
+                </div>
+                <div class="whyjoin-item-desc">
+                  We care about the privacy and security of our customers. All accounts are verified so look for an
+                  attractive stranger confidently!
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div class="whyjoin-item whyjoin-item-third">
+                <div class="whyjoin-item-title">
+                  <img src="media/search.svg" alt="search icon" width="36" height="36" />
+                  <p class="whyjoin-item-text">Customized search</p>
+                </div>
+                <div class="whyjoin-item-desc">
+                  Match alluring partners for your own preferences. Maybe you will be interested in a hot slender
+                  European or shy beautiful Asian? Make your choice…
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide">
+              <div class="whyjoin-item whyjoin-item-fourth">
+                <div class="whyjoin-item-title">
+                  <img src="media/easy.svg" alt="easy icon" width="36" height="36" />
+                  <p class="whyjoin-item-text">Easy to use</p>
+                </div>
+                <div class="whyjoin-item-desc">
+                  Forget about hundreds of annoying notifications and inconvenient use. We have created the platform as
+                  easy to use and search as possible. Don’t waste your time studying functionality. Just enjoy!
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="whyjoin-image">
+          <img src="media/streamer-1.jpg" alt="streamer image" />
+        </div>
+      </div>
+    </section>
+    <section class="find animate-on-scroll">
+      <p class="find-title">Here you can find</p>
+      <div class="find-wrapper">
+        <div class="find-item">
+          <img class="find-item-image" src="media/pc.svg" alt="find list icon" />
+          <p class="find-item-text">Watching streams of everyone you really like;</p>
+        </div>
+        <div class="find-item">
+          <img class="find-item-image" src="media/comm.svg" alt="find list icon" />
+          <p class="find-item-text">Free communication with pretty streamers;</p>
+        </div>
+        <div class="find-item">
+          <img class="find-item-image" src="media/connection.svg" alt="find list icon" />
+          <p class="find-item-text">Sweet connection with people you match;</p>
+        </div>
+        <div class="find-item">
+          <img class="find-item-image" src="media/interests.svg" alt="find list icon" />
+          <p class="find-item-text">New acquaintances with someone who has similar interests;</p>
+        </div>
+        <div class="find-item">
+          <img class="find-item-image" src="media/sound.svg" alt="find list icon" />
+          <p class="find-item-text">Fascinating hobbies and exciting occupations from people you fancy.</p>
+        </div>
+      </div>
+    </section>
+    <section class="join animate-on-scroll">
+      <div class="join-wrapper">
+        <p class="join-title">It’s a universe of communication and streaming without borders!</p>
+        <p class="join-text">
+          Let yourself to be free – share your thoughts, delight, and fears with beautiful strangers!
+        </p>
+      </div>
+      <div class="swiper joinSwiper">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide"><img src="media/join-image-2.jpg" alt="Join image" /></div>
+          <div class="swiper-slide"><img src="media/join-image-3.jpg" alt="Join image" /></div>
+          <div class="swiper-slide"><img src="media/join-image-4.jpg" alt="Join image" /></div>
+          <div class="swiper-slide"><img src="media/join-image-2.jpg" alt="Join image" /></div>
+          <div class="swiper-slide"><img src="media/join-image-3.jpg" alt="Join image" /></div>
+          <div class="swiper-slide"><img src="media/join-image-4.jpg" alt="Join image" /></div>
+        </div>
+      </div>
+      <a class="join-button" href="#form">Join us for free</a>
+    </section>
+    <section class="write animate-on-scroll">
+      <div class="write-wrapper">
+        <div class="write-desc">
+          <p class="write-title">It’s a dedicated space for your bold fantasies!</p>
+          <p class="write-text">
+            Hundreds of attractive admirers are already waiting for you here. Don’t delay – dive into the world of
+            streaming, flirting, and hot communication right now!
+          </p>
+          <a class="write-button" href="#form">Write to her</a>
+        </div>
+        <div class="write-image">
+          <img src="media/write.png" alt="write section image" />
+        </div>
+      </div>
+    </section>
+    <footer class="footer animate-on-scroll">
+      <div class="footer-container">
+        <div class="footer-column">
+          <p>support@gmail.com</p>
+          <a href="#">Unsubscribe</a>
+        </div>
+        <div class="footer-column">
+          <h4>Legal terms</h4>
+          <a href="#">Terms of Use</a>
+          <a href="#">Disclosures & Disclaimers</a>
+        </div>
+        <div class="footer-column">
+          <h4>Privacy info</h4>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Cookie Policy</a>
+        </div>
+        <div class="footer-column">
+          <h4>About</h4>
+          <a href="#">About Us</a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!-- Initialize Swiper -->
+    <script>
+      const swiperMain = new Swiper(".mainSwiper", {
+        slidesPerView: "auto",
+        initialSlide: 1,
+        loop: true,
+        centeredSlides: true,
+        spaceBetween: 40,
+        autoplay: {
+          delay: 3000,
+          disableOnInteraction: false,
+        },
+        breakpoints: {
+          320: {
+            slidesPerView: 1,
+            initialSlide: 0,
+            spaceBetween: 40,
+          },
+          768: {
+            slidesPerView: "auto",
+          },
+        },
+      });
+
+      const swiperWhyJoin = new Swiper(".whyjoinSwiper", {
+        slidesPerView: 1,
+        loop: true,
+        autoplay: {
+          delay: 4000,
+          disableOnInteraction: false,
+        },
+      });
+
+      const swiperJoin = new Swiper(".joinSwiper", {
+        slidesPerView: "auto",
+        loop: true,
+        centeredSlides: true,
+        spaceBetween: 30,
+        autoplay: {
+          delay: 3000,
+          disableOnInteraction: false,
+        },
+        breakpoints: {
+          320: {
+            slidesPerView: 1,
+          },
+          768: {
+            slidesPerView: "auto",
+          },
+        },
+      });
+    </script>
+    <!-- Modal HTML updated -->
+    <div class="modal-overlay" id="modalOverlay">
+      <div class="modal">
+        <div class="modal-content">
+          <span class="close-modal" id="closeModal">&times;</span>
+          <h2>Register on our platform</h2>
+          <form id="registrationForm" class="modal-form">
+            <div class="input-wrapper">
+              <label for="modalEmail">Email</label>
+              <input type="email" id="modalEmail" required />
+              <span class="error-message" id="modalEmailError"></span>
+            </div>
+            <div class="input-wrapper">
+              <label for="modalPassword">Password</label>
+              <input type="password" id="modalPassword" required />
+              <span class="error-message" id="modalPasswordError"></span>
+            </div>
+            <button type="submit" class="modal-submit">Sign Up</button>
+          </form>
+          <button class="google-signup" id="googleSignup">
+            <img src="media/google.png" alt="Google Logo" />
+            <span>Sign up with Google</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const loginButton = document.querySelector(".login-form-login");
+        const modalOverlay = document.getElementById("modalOverlay");
+        const closeModal = document.getElementById("closeModal");
+        const googleSignup = document.getElementById("googleSignup");
+        const registrationFormModal = document.getElementById("registrationForm");
+
+        // Основная форма
+        const emailMain = document.getElementById("mail");
+        const passMain = document.getElementById("pass");
+        const emailErrorMain = document.getElementById("emailError");
+        const passwordErrorMain = document.getElementById("passwordError");
+
+        const googleBtnMain = document.querySelector(".login-google-button");
+        const emailBtnMain = document.querySelector(".login-signin-button");
+
+        // Модалка
+        const emailModal = document.getElementById("modalEmail");
+        const passModal = document.getElementById("modalPassword");
+        const emailErrorModal = document.getElementById("modalEmailError");
+        const passwordErrorModal = document.getElementById("modalPasswordError");
+
+        // Показ модального окна
+        loginButton.addEventListener("click", function (e) {
+          e.preventDefault();
+          modalOverlay.style.display = "flex";
+          document.body.style.overflow = "hidden";
+        });
+
+        closeModal.addEventListener("click", function () {
+          modalOverlay.style.display = "none";
+          document.body.style.overflow = "auto";
+        });
+
+        modalOverlay.addEventListener("click", function (e) {
+          if (e.target === modalOverlay) {
+            modalOverlay.style.display = "none";
+            document.body.style.overflow = "auto";
+          }
+        });
+
+        googleSignup.addEventListener("click", function () {
+          document.getElementById("successModal").style.display = "flex";
+          document.body.style.overflow = "hidden";
+
+          this.classList.add("pulse-animation");
+          setTimeout(() => this.classList.remove("pulse-animation"), 1500);
+        });
+
+        if (googleBtnMain) {
+          googleBtnMain.addEventListener("click", function (e) {
+            e.preventDefault();
+            document.getElementById("successModal").style.display = "flex";
+            document.body.style.overflow = "hidden";
+          });
+        }
+
+        if (emailBtnMain) {
+          emailBtnMain.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            let valid = true;
+            emailErrorMain.textContent = "";
+            passwordErrorMain.textContent = "";
+            emailMain.classList.remove("shake", "error");
+            passMain.classList.remove("shake", "error");
+
+            if (!emailMain.value.match(/^\S+@\S+\.\S+$/)) {
+              emailErrorMain.textContent = "Please enter a valid email.";
+              emailMain.classList.add("shake", "error");
+              valid = false;
+            }
+
+            if (passMain.value.length < 8) {
+              passwordErrorMain.textContent = "Password must be at least 8 characters.";
+              passMain.classList.add("shake", "error");
+              valid = false;
+            }
+
+            if (valid) {
+              successModal.style.display = "flex";
+              document.body.style.overflow = "hidden";
+            }
+          });
+        }
+
+        registrationFormModal.addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          let valid = true;
+          emailErrorModal.textContent = "";
+          passwordErrorModal.textContent = "";
+          emailModal.classList.remove("shake", "error");
+          passModal.classList.remove("shake", "error");
+
+          if (!emailModal.value.match(/^\S+@\S+\.\S+$/)) {
+            emailErrorModal.textContent = "Please enter a valid email.";
+            emailModal.classList.add("shake", "error");
+            valid = false;
+          }
+
+          if (passModal.value.length < 8) {
+            passwordErrorModal.textContent = "Password must be at least 8 characters.";
+            passModal.classList.add("shake", "error");
+            valid = false;
+          }
+
+          if (valid) {
+            successModal.style.display = "flex";
+            document.body.style.overflow = "hidden";
+          }
+        });
+
+        const successModal = document.getElementById("successModal");
+        const closeSuccessModal = document.getElementById("closeSuccessModal");
+
+        closeSuccessModal.addEventListener("click", function () {
+          successModal.style.display = "none";
+          document.body.style.overflow = "auto";
+        });
+
+        successModal.addEventListener("click", function (e) {
+          if (e.target === successModal) {
+            successModal.style.display = "none";
+            document.body.style.overflow = "auto";
+          }
+        });
+      });
+      function initScrollAnimations(selector = ".animate-on-scroll", offset = 100) {
+        const elements = document.querySelectorAll(selector);
+
+        const animate = () => {
+          const windowHeight = window.innerHeight;
+
+          elements.forEach((el) => {
+            const rect = el.getBoundingClientRect();
+            const isVisible = rect.top < windowHeight - offset;
+
+            if (isVisible && !el.classList.contains("animated")) {
+              el.classList.add("animated");
+            }
+          });
+        };
+
+        window.addEventListener("scroll", animate);
+        window.addEventListener("load", animate);
+        window.addEventListener("resize", animate);
+      }
+
+      initScrollAnimations();
+    </script>
+
+    <!-- Модальное окно для благодарности -->
+    <div class="modal-overlay" id="successModal">
+      <div class="modal">
+        <div class="modal-content">
+          <span class="close-modal" id="closeSuccessModal">&times;</span>
+          <h2>Thank you for registering on our platform 💗</h2>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
